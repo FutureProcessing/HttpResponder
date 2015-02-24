@@ -1,0 +1,4 @@
+﻿{
+    "path": "Hello {{name}}",
+    "ahaha": "nested {{a.b.c}}"
+}

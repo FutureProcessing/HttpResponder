@@ -1,0 +1,16 @@
+﻿{
+    "get": {
+        "/test": {
+            "statusCode": 222,
+            "response": "sdfsdfd"
+        }
+    },
+    "post": {
+        "/template": {
+            "contentType": "application/json",
+            "statusCode": 400,
+            "reasonPhrase": "Bad",
+            "template": "templates/template1.json"
+        }
+    }
+}
