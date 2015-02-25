@@ -6,8 +6,9 @@
         },
         "/headers": {
             "response": "With headers",
-            "headers": { 
-                "X-Header": "1.0"
+            "headers": {
+                "X-Header": [ "1.0", "2.0", "3.0" ],
+                "X-Header2": "test"
             }
         }
     },

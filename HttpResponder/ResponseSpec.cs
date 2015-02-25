@@ -1,5 +1,8 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Owin;
@@ -17,14 +20,14 @@ namespace HttpResponder
         public string ReasonPhrase { get; set; }
         public string ContentType { get; set; }
 
-        public Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, object> Headers { get; set; }
 
         public ResponseSpec()
         {
             this.StatusCode = 200;
             this.ReasonPhrase = "OK";
             this.ContentType = "text/plain";
-            this.Headers = new Dictionary<string, string>();
+            this.Headers = new Dictionary<string, object>();
         }
 
         public virtual async Task Render(IOwinRequest request, IOwinResponse response)
@@ -35,7 +38,15 @@ namespace HttpResponder
 
             foreach (var header in this.Headers)
             {
-                response.Headers[header.Key] = header.Value;
+                if (header.Value is JArray)
+                {
+                    var values = ((JArray) header.Value).Select(x => (string) x).ToArray();
+                    response.Headers.Add(header.Key, values);
+                }
+                else
+                {
+                    response.Headers.Append(header.Key, header.Value.ToString());
+                }
             }
 
             if (this.Response != null)
