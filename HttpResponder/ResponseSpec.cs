@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -16,11 +17,14 @@ namespace HttpResponder
         public string ReasonPhrase { get; set; }
         public string ContentType { get; set; }
 
+        public Dictionary<string, string> Headers { get; set; }
+
         public ResponseSpec()
         {
             this.StatusCode = 200;
             this.ReasonPhrase = "OK";
             this.ContentType = "text/plain";
+            this.Headers = new Dictionary<string, string>();
         }
 
         public virtual async Task Render(IOwinRequest request, IOwinResponse response)
@@ -28,6 +32,11 @@ namespace HttpResponder
             response.StatusCode = this.StatusCode;
             response.ReasonPhrase = this.ReasonPhrase;
             response.ContentType = this.ContentType;
+
+            foreach (var header in this.Headers)
+            {
+                response.Headers[header.Key] = header.Value;
+            }
 
             if (this.Response != null)
             {

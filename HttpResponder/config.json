@@ -3,6 +3,12 @@
         "/test": {
             "statusCode": 222,
             "response": "sdfsdfd"
+        },
+        "/headers": {
+            "response": "With headers",
+            "headers": { 
+                "X-Header": "1.0"
+            }
         }
     },
     "post": {
