@@ -10,6 +10,9 @@
                 "X-Header": [ "1.0", "2.0", "3.0" ],
                 "X-Header2": "test"
             }
+        },
+        "/tmpl": { 
+            "template": "templates/template2.txt"
         }
     },
     "post": {

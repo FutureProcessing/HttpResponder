@@ -59,7 +59,7 @@ namespace HttpResponder
 
                 dynamic body = null;
 
-                if (request.Body != null)
+                if (request.Method != "GET")
                 {
                     switch (request.ContentType.ToLower())
                     {
