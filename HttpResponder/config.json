@@ -11,8 +11,9 @@
                 "X-Header2": "test"
             }
         },
-        "/tmpl": { 
-            "template": "templates/template2.txt"
+        "/tmpl": {
+            "template": "templates/template2.txt",
+            "sleep": "00:00:20"
         }
     },
     "post": {

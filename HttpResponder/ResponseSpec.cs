@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Owin;
@@ -19,6 +20,7 @@ namespace HttpResponder
         public int StatusCode { get; set; }
         public string ReasonPhrase { get; set; }
         public string ContentType { get; set; }
+        public TimeSpan? Sleep { get; set; }
 
         public Dictionary<string, object> Headers { get; set; }
 
@@ -35,6 +37,11 @@ namespace HttpResponder
             response.StatusCode = this.StatusCode;
             response.ReasonPhrase = this.ReasonPhrase;
             response.ContentType = this.ContentType;
+
+            if (this.Sleep.HasValue)
+            {
+                Thread.Sleep(this.Sleep.Value);
+            }
 
             foreach (var header in this.Headers)
             {
