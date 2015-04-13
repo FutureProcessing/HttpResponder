@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" autoReload="true">
+  <extensions>
+    <add assembly="HttpResponder"/>
+  </extensions>
+
+  <targets>
+    <target xsi:type="ColoredConsole" name="req-console" layout="${time} Request2! Name=${body:item=name} C=${body:item=a.b.c}" />
+    <target xsi:type="Database"
+            name="db"
+            dbProvider="System.Data.SqlClient"
+            connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=test;Trusted_Connection=yes"
+            useTransactions="false"
+            commandText="insert into logs(Time,Name,CValue) values(@time, @name, @c)">
+      <parameter name="time" layout="${date}"/>
+      <parameter name="name" layout="${body:item=name}"/>
+      <parameter name="c" layout="${body:item=a.b.c}"/>
+    </target>
+  </targets>
+
+  <rules>
+    <logger name="request.sample" writeTo="req-console"/>
+    <logger name="request.sample" writeTo="db"/>
+  </rules>
+</nlog>

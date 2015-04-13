@@ -9,6 +9,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
 using Newtonsoft.Json;
 using NLog;
+using NLog.Config;
 using NLog.Fluent;
 using Owin;
 
@@ -25,16 +26,29 @@ namespace HttpResponder
 
             var configFile = args[1];
 
-            Action<IAppBuilder> appBuilder = app => ConfigureHttp(app, configFile);
+            LogFactory requestLogging;
+
+            if (args.Length == 3)
+            {
+                var xmlLoggingConfiguration = new XmlLoggingConfiguration(args[2]) {AutoReload = true};
+                
+                requestLogging = new LogFactory(xmlLoggingConfiguration);                
+            }
+            else
+            {
+                requestLogging = new LogFactory(new LoggingConfiguration());
+            }
+
+            Action<IAppBuilder> appBuilder = app => ConfigureHttp(app, configFile, requestLogging);
 
             using (WebApp.Start(options, appBuilder))
             {
-                Log.Info("HTTP server ready. Press [Enter] to stop");
+                Log.Info("HTTP server ready on {0}. Press [Enter] to stop", options.Urls[0]);
                 Console.ReadLine();
             }
         }
 
-        private static void ConfigureHttp(IAppBuilder app, string configFile)
+        private static void ConfigureHttp(IAppBuilder app, string configFile, LogFactory requestLogging)
         {
             app.UseErrorPage();
 
@@ -46,7 +60,7 @@ namespace HttpResponder
 
                 var responseSpec = config.FindMatching(ctx.Request.Method, ctx.Request.Path.ToString()) ?? new NotFoundResponse();
 
-                await responseSpec.Render(ctx.Request, ctx.Response);
+                await responseSpec.Render(ctx.Request, ctx.Response, requestLogging);
             });
         }
     }
@@ -89,7 +103,7 @@ namespace HttpResponder
 
     public class NotFoundResponse : ResponseSpec
     {
-        public override async Task Render(IOwinRequest request, IOwinResponse response)
+        public override async Task Render(IOwinRequest request, IOwinResponse response, LogFactory requestLogging)
         {
             response.StatusCode = 404;
             response.ReasonPhrase = "Not found";
