@@ -13,13 +13,19 @@
             useTransactions="false"
             commandText="insert into logs(Time,Name,CValue) values(@time, @name, @c)">
       <parameter name="time" layout="${date}"/>
-      <parameter name="name" layout="${body:item=name}"/>
-      <parameter name="c" layout="${body:item=a.b.c}"/>
+      <parameter name="name" layout="${body:item=name}" />
+      <parameter name="c" layout="${body:item=a.b.c}" />
     </target>
+    
+    
+    <target xsi:type="ColoredConsole"
+            name="req-soap"
+            layout="${time} SOAP2! '${bodyxml:path=//*[local-name() = 'CallerToken']}'"/>
   </targets>
 
   <rules>
     <logger name="request.sample" writeTo="req-console"/>
     <logger name="request.sample" writeTo="db"/>
+    <logger name="request.soap" writeTo="req-soap"/>
   </rules>
 </nlog>

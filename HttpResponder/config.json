@@ -2,7 +2,7 @@
     "get": {
         "/test": {
             "statusCode": 222,
-            "response": "sdfsdfd",            
+            "response": "sdfsdfd"
         },
         "/headers": {
             "response": "With headers",
@@ -23,6 +23,11 @@
             "reasonPhrase": "Bad",
             "template": "templates/template1.json",
             "logUsing": "request.sample"
+        },
+        "/soap": {
+            "contentType": "text/plain",
+            "response": "aaa",
+            "logUsing": "request.soap"
         }
     }
 }

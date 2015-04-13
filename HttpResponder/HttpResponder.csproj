@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="DynamicXmlAdapter.cs" />
     <Compile Include="Logging\BodyLayoutRenderer.cs" />
+    <Compile Include="Logging\BodyXPathRenderer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResponseSpec.cs" />

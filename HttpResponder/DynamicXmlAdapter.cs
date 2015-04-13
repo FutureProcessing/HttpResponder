@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using NLog;
 
 namespace HttpResponder
@@ -48,6 +49,11 @@ namespace HttpResponder
         public override string ToString()
         {
             return this.root.Value;
+        }
+
+        public string XPath(string path)
+        {
+            return this.root.XPathSelectElement(path).Value;
         }
     }
 }
