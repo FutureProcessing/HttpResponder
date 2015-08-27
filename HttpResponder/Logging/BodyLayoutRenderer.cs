@@ -24,4 +24,13 @@ namespace HttpResponder.Logging
             builder.Append(value);
         }
     }
+
+    [LayoutRenderer("raw-body")]
+    public class RawBodyLayoutRendere : LayoutRenderer
+    {
+        protected override void Append(StringBuilder builder, LogEventInfo logEvent)
+        {
+            builder.Append(logEvent.Properties["raw-body"]);
+        }
+    }
 }

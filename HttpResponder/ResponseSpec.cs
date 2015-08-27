@@ -64,6 +64,7 @@ namespace HttpResponder
        
             var eventInfo = new LogEventInfo(LogLevel.Trace, this.LogUsing, "");
             eventInfo.Properties["body"] = body;
+            eventInfo.Properties["raw-body"] = request.Environment["raw-body"];
 
             logger.Log(eventInfo);
         }
@@ -87,19 +88,29 @@ namespace HttpResponder
         private static async Task<dynamic> ReadBody(IOwinRequest request)
         {
             dynamic body = null;
+            string stringBody = "";
 
             if (request.Method != "GET")
             {
+                
+                using (var sr = new StreamReader(request.Body))
+                {
+                    stringBody = sr.ReadToEnd();
+                }
+
                 switch (request.ContentType.ToLower())
                 {
                     case "application/json":
-                        body = ReadJsonInput(request.Body);
+                        body = ReadJsonInput(stringBody);
                         break;
                     case "text/xml":
-                        body = await ReadXmlInput(request);
+                        body = ReadXmlInput(stringBody);
                         break;
                 }
             }
+
+            request.Environment["raw-body"] = stringBody;
+
             return body;
         }
 
@@ -127,27 +138,15 @@ namespace HttpResponder
             }
         }
 
-        private static async Task<dynamic> ReadXmlInput(IOwinRequest request)
-        {            
-            using (var sr = new StreamReader(request.Body))
-            {
-                var xml = XDocument.Parse(await sr.ReadToEndAsync());
-                return new DynamicXmlAdapter(xml.Root);
-            }            
+        private static dynamic ReadXmlInput(string body)
+        {
+            var xml = XDocument.Parse(body);
+            return new DynamicXmlAdapter(xml.Root);
         }
 
-        private static dynamic ReadJsonInput(Stream bodyStream)
+        private static dynamic ReadJsonInput(string body)
         {
-            JObject obj;
-
-            using (var reader = new StreamReader(bodyStream))
-            {
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    obj = (JObject)JToken.ReadFrom(jsonReader);
-                }
-            }
-            return obj;
+            return JToken.Parse(body);
         }
     }
 }
