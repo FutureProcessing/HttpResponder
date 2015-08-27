@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.Owin;
+using Microsoft.Owin.Diagnostics;
 using Microsoft.Owin.Hosting;
 using Newtonsoft.Json;
 using NLog;
@@ -15,42 +16,45 @@ using Owin;
 
 namespace HttpResponder
 {
-    class Program
-    {
-        private static readonly Logger Log = LogManager.GetLogger("Startup");
-        private static readonly Logger Http = LogManager.GetLogger("HTTP");
+	class Program
+	{
+		private static readonly Logger Log = LogManager.GetLogger("Startup");
+		private static readonly Logger Http = LogManager.GetLogger("HTTP");
 
-        static void Main(string[] args)
-        {
-            var options = new StartOptions(args[0]);
+		static void Main(string[] args)
+		{
+			var options = new StartOptions(args[0]);
 
-            var configFile = args[1];
+			var configFile = args[1];
 
-            LogFactory requestLogging;
+			LogFactory requestLogging;
 
-            if (args.Length == 3)
-            {
-                var xmlLoggingConfiguration = new XmlLoggingConfiguration(args[2]) {AutoReload = true};
-                
-                requestLogging = new LogFactory(xmlLoggingConfiguration);                
-            }
-            else
-            {
-                requestLogging = new LogFactory(new LoggingConfiguration());
-            }
+			if (args.Length == 3)
+			{
+				var xmlLoggingConfiguration = new XmlLoggingConfiguration(args[2]) { AutoReload = true };
 
-            Action<IAppBuilder> appBuilder = app => ConfigureHttp(app, configFile, requestLogging);
+				requestLogging = new LogFactory(xmlLoggingConfiguration);
+			}
+			else
+			{
+				requestLogging = new LogFactory(new LoggingConfiguration());
+			}
 
-            using (WebApp.Start(options, appBuilder))
-            {
-                Log.Info("HTTP server ready on {0}. Press [Enter] to stop", options.Urls[0]);
-                Console.ReadLine();
-            }
-        }
+			Action<IAppBuilder> appBuilder = app => ConfigureHttp(app, configFile, requestLogging);
 
-        private static void ConfigureHttp(IAppBuilder app, string configFile, LogFactory requestLogging)
-        {
-            app.UseErrorPage();
+			using (WebApp.Start(options, appBuilder))
+			{
+				Log.Info("HTTP server ready on {0}. Press [Enter] to stop", options.Urls[0]);
+				Console.ReadLine();
+			}
+		}
+
+		private static void ConfigureHttp(IAppBuilder app, string configFile, LogFactory requestLogging)
+		{
+			app.UseErrorPage(new ErrorPageOptions 
+			{
+				ShowExceptionDetails = true
+			});
 
             app.Run(async ctx =>
             {
