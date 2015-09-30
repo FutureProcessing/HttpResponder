@@ -36,6 +36,9 @@
     <Reference Include="Handlebars">
       <HintPath>..\packages\Handlebars.Net.1.2.6\lib\Handlebars.dll</HintPath>
     </Reference>
+    <Reference Include="Jint">
+      <HintPath>..\packages\Jint.2.6.0\lib\portable-net40+sl50+win+WindowsPhoneApp81+wp80\Jint.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
@@ -66,12 +69,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigJson.cs" />
+    <Compile Include="Config\Configuration.cs" />
+    <Compile Include="Config\MethodHandling.cs" />
+    <Compile Include="Converters\ResponseSpecConverter.cs" />
     <Compile Include="DynamicXmlAdapter.cs" />
+    <Compile Include="IResponseSpec.cs" />
     <Compile Include="Logging\BodyLayoutRenderer.cs" />
     <Compile Include="Logging\BodyXPathRenderer.cs" />
+    <Compile Include="NotFoundResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResponseSpec.cs" />
+    <Compile Include="ScriptResponseSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

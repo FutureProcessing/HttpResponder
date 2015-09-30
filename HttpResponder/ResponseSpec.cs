@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +14,7 @@ using NLog.Config;
 
 namespace HttpResponder
 {
-    public class ResponseSpec
+    public class ResponseSpec : IResponseSpec
     {
         public string Response { get; set; }
         public string Template { get; set; }
@@ -42,7 +41,7 @@ namespace HttpResponder
             response.ReasonPhrase = this.ReasonPhrase;
             response.ContentType = this.ContentType;
 
-            dynamic body = await ReadBody(request);
+            dynamic body = request.Environment["body"];
 
             LogResponse(request, requestLogging, body);
 
@@ -85,35 +84,6 @@ namespace HttpResponder
             }
         }
 
-        private static async Task<dynamic> ReadBody(IOwinRequest request)
-        {
-            dynamic body = null;
-            string stringBody = "";
-
-            if (request.Method != "GET")
-            {
-                
-                using (var sr = new StreamReader(request.Body))
-                {
-                    stringBody = sr.ReadToEnd();
-                }
-
-                switch (request.ContentType.ToLower())
-                {
-                    case "application/json":
-                        body = ReadJsonInput(stringBody);
-                        break;
-                    case "text/xml":
-                        body = ReadXmlInput(stringBody);
-                        break;
-                }
-            }
-
-            request.Environment["raw-body"] = stringBody;
-
-            return body;
-        }
-
         private void WriteHeaders(IOwinResponse response)
         {
             foreach (var header in this.Headers)
@@ -136,17 +106,6 @@ namespace HttpResponder
             {
                 Thread.Sleep((TimeSpan) this.Sleep.Value);
             }
-        }
-
-        private static dynamic ReadXmlInput(string body)
-        {
-            var xml = XDocument.Parse(body);
-            return new DynamicXmlAdapter(xml.Root);
-        }
-
-        private static dynamic ReadJsonInput(string body)
-        {
-            return JToken.Parse(body);
         }
     }
 }
